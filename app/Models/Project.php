@@ -13,6 +13,9 @@ class Project extends Model
 
     protected $guarded = [];
 
+    // if didnt respect namign convention
+    // protected $table = 'projects';
+
     public function stack(): BelongsTo
     {
         return $this->belongsTo(Stack::class, 'stack_id');

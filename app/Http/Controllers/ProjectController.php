@@ -25,15 +25,11 @@ class ProjectController extends Controller
 
     public function store(ProjectStoreRequest $request)
     {
-        $validated_data = $request->validated();
-        $project = Project::create([
-            'title' => $validated_data['title'],
-            'description' => $validated_data['description'],
-            'thumb' => $validated_data['thumb'],
-        ]);
+        $project = Project::create(
+            $request->only(['title', 'thumb', 'description'])
+        );
         if ($request->has('technologies')) {
-            $technologies = $request->input('technologies');
-            $project->technologies()->attach($technologies);
+            $project->technologies()->sync($request->technologies);
         }
         return redirect()->route('dashboard');
     }
@@ -58,11 +54,13 @@ class ProjectController extends Controller
 
     public function update(ProjectUpdateRequest $request, Project $project)
     {
-        $validated_data = $request->validated();
-        $project->update($validated_data);
+        // $validated_data = $request->validated();
+
+        $project->update($request->only(['title', 'thumb', 'description']));
+
+
         if ($request->has('technologies')) {
-            $technologies = $request->input('technologies');
-            $project->technologies()->sync($technologies);
+            $project->technologies()->sync($request->technologies);
         }
 
         return redirect()->route('projects.show', $project);

@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Project;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class ProjectUpdateRequest extends ProjectStoreRequest
+class ProjectUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,10 +23,11 @@ class ProjectUpdateRequest extends ProjectStoreRequest
      */
     public function rules(): array
     {
-        $rules = parent::rules();
-
-
-        $rules['title'] .= ',' . $this->project->id;
-        return $rules;
+        return [
+            'title' => ['required', 'max:100', Rule::unique(Project::class)->ignore($this->project)],
+            'description' => 'max:8192',
+            'thumb' => 'max:250|active_url|nullable',
+            'technologies' => 'nullable|array',
+        ];
     }
 }
