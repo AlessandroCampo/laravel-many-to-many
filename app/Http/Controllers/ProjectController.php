@@ -7,6 +7,8 @@ use Illuminate\Validation\Rule;
 use App\Models\Project;
 use App\Models\Stack;
 use App\Models\Technology;
+use App\Http\Requests\ProjectStoreRequest;
+use App\Http\Requests\ProjectUpdateRequest;
 
 class ProjectController extends Controller
 {
@@ -21,17 +23,9 @@ class ProjectController extends Controller
         return view('projects.create', compact('stacks', 'technologies'));
     }
 
-    public function store(Request $request)
+    public function store(ProjectStoreRequest $request)
     {
-        $validated_data = $request->validate(
-            [
-                'title' =>  'required|unique:projects|max:100',
-                'description' => 'max:8192',
-                'thumb' => 'max:250|active_url|nullable',
-                'technologies' => 'nullable|array',
-
-            ]
-        );
+        $validated_data = $request->validated();
         $project = Project::create([
             'title' => $validated_data['title'],
             'description' => $validated_data['description'],
@@ -62,20 +56,15 @@ class ProjectController extends Controller
         return view('projects.edit', compact('project', 'technologies', 'project_technologies'));
     }
 
-    public function update(Request $request, Project $project)
+    public function update(ProjectUpdateRequest $request, Project $project)
     {
-        $validated_data = $request->validate(
-            [
-                'title' =>  ['required', 'max:100', Rule::unique('projects')->ignore($project->id)],
-                'description' => 'max:8192',
-                'thumb' => 'max:250|active_url|nullable'
-            ]
-        );
+        $validated_data = $request->validated();
         $project->update($validated_data);
         if ($request->has('technologies')) {
             $technologies = $request->input('technologies');
             $project->technologies()->sync($technologies);
         }
+
         return redirect()->route('projects.show', $project);
     }
 
