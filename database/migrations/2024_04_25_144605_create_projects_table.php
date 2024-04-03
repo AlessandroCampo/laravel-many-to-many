@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
             $table->string('title', 100)->nullable(false)->unique();
-            $table->unsignedBigInteger('stack_id');
+            $table->unsignedBigInteger('stack_id')->nullable(true);
             $table->foreign('stack_id')->references('id')->on('stacks')->onDelete('cascade');
             $table->text('description', 8192)->nullable(true);
             $table->string('thumb', 250)->nullable(true);

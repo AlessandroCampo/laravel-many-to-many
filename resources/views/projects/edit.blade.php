@@ -52,16 +52,21 @@ $form_classes = 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded
                         @enderror
                     </div>
                     <div class="mb-5">
-                        <label for="stack_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                            Project stack_id </label>
-                        <select name="stack_id" id="stack_id" class="{{ $form_classes }}">
-                            @foreach ($stacks as $item)
-                                <option value="{{ $item->id }}"
-                                    {{ $item->id == $project->stack_id ? 'selected' : '' }}>
-                                    {{ Str::ucfirst($item->name) }} </option>
+                        <div class="checkbox-container flex flex-col gap-3">
+                            @foreach ($technologies as $technology)
+                                <div class="flex items-center gap-4">
+                                    <input type="checkbox" name="technologies[]" id="technology_{{ $technology->id }}"
+                                        value="{{ $technology->id }}" @if ($project->technologies->contains($technology->id)) checked @endif>
+                                    <label for="technology_{{ $technology->id }}"
+                                        class="capitalize flex items-center gap-3"><img
+                                            src="{{ $technology->logo_url }}" alt="" class="w-[20px]">
+                                        <span>
+                                            {{ $technology->name }}
+                                        </span>
+                                    </label><br>
+                                </div>
                             @endforeach
-                        </select>
-
+                        </div>
                     </div>
 
                     <div class="mb-5">

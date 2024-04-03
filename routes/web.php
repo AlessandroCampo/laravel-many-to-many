@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
 use App\Models\Project;
 use App\Models\Stack;
+use App\Models\Technology;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -23,8 +24,11 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
     $projects = Project::all();
-    $stacks = Stack::all();
-    return view('dashboard', compact('projects', 'stacks'));
+    $technologies = Technology::all();
+    $projects->each(function ($project) {
+        $project->technologies = $project->technologies()->get();
+    });
+    return view('dashboard', compact('projects'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {

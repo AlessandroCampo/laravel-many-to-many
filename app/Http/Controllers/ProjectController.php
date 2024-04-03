@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Models\Project;
 use App\Models\Stack;
+use App\Models\Technology;
 
 class ProjectController extends Controller
 {
@@ -15,9 +16,9 @@ class ProjectController extends Controller
 
     public function create()
     {
-
+        $technologies = Technology::all();
         $stacks = Stack::all();
-        return view('projects.create', compact('stacks'));
+        return view('projects.create', compact('stacks', 'technologies'));
     }
 
     public function store(Request $request)
@@ -25,30 +26,40 @@ class ProjectController extends Controller
         $validated_data = $request->validate(
             [
                 'title' =>  'required|unique:projects|max:100',
-                'stack_id' => 'nullable|integer|exists:stacks,id',
                 'description' => 'max:8192',
                 'thumb' => 'max:250|active_url|nullable',
+                'technologies' => 'nullable|array',
 
             ]
         );
-        Project::create($validated_data);
+        $project = Project::create([
+            'title' => $validated_data['title'],
+            'description' => $validated_data['description'],
+            'thumb' => $validated_data['thumb'],
+        ]);
+        if ($request->has('technologies')) {
+            $technologies = $request->input('technologies');
+            $project->technologies()->attach($technologies);
+        }
         return redirect()->route('dashboard');
     }
 
     public function show(Project $project)
     {
-        // Accessing the 'stack' relationship to retrieve related stack records
-        $stack = $project->stack->first();
 
-        // Pass the $project and $stack variables to the view
-        return view('projects.show', compact('project', 'stack'));
+        $technologies = $project->technologies()->get();
+
+
+        return view('projects.show', compact('project', 'technologies'));
     }
 
 
     public function edit(Project $project)
     {
-        $stacks = Stack::all();
-        return view('projects.edit', compact('project', 'stacks'));
+        // $stacks = Stack::all();
+        $technologies = Technology::all();
+        $project_technologies = $project->technologies()->get();
+        return view('projects.edit', compact('project', 'technologies', 'project_technologies'));
     }
 
     public function update(Request $request, Project $project)
@@ -56,13 +67,16 @@ class ProjectController extends Controller
         $validated_data = $request->validate(
             [
                 'title' =>  ['required', 'max:100', Rule::unique('projects')->ignore($project->id)],
-                'stack_id' => 'nullable|integer|exists:stacks,id',
                 'description' => 'max:8192',
                 'thumb' => 'max:250|active_url|nullable'
             ]
         );
         $project->update($validated_data);
-        return view('projects.show', compact('project'));
+        if ($request->has('technologies')) {
+            $technologies = $request->input('technologies');
+            $project->technologies()->sync($technologies);
+        }
+        return redirect()->route('projects.show', $project);
     }
 
     public function destroy(Project $project)

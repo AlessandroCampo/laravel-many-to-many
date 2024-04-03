@@ -18,9 +18,12 @@
         <img src="{{ $project->thumb }}" alt="{{ $project->title }}" class="w-[400px]">
         <p class="text-xl">{{ $project->description }} </p>
         <div class="flex flex-col gap-3 items-center">
-            <p class="text-2xl font-extrabold"> Technologies used in this project: </p>
+            <p class="text-2xl font-extrabold"> Tecnologie usate in questo progetto </p>
             <div class="flex">
-                <img src="{{ $project->stack->logo_url }}" alt="{{ $project->stack->name }}" class="w-[100px]">
+                @foreach ($technologies as $technology)
+                    <img src="{{ $technology->logo_url }}" alt="{{ $technology->name }}" class="w-[100px]">
+                @endforeach
+
             </div>
         </div>
         <div class="actions flex gap-3 items-center justify-center">

@@ -23,7 +23,6 @@
                 class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg flex justify-between p-6 flex-wrap">
                 @foreach ($projects as $projectData)
                     @php
-
                         $stack = Stack::find($projectData['stack_id']);
                     @endphp
                     <div
@@ -31,12 +30,18 @@
                         <img src="{{ $projectData['thumb'] }}" class="w-[200px] h-[100px]">
                         <div class="flex items-center gap-2">
                             <h2 class="text-xl font-semibold"> {{ $projectData['title'] }}</h2>
-                            <img src="{{ $stack->logo_url }}" class="w-[30px]">
                         </div>
 
                         <p class="text-sm text-center">
                             {{ $projectData['description'] }}
                         </p>
+
+                        <div class="tech-container flex gap-3 items-center">
+                            @foreach ($projectData->technologies as $technology)
+                                <img src="{{ $technology->logo_url }}" alt="{{ $technology->name }}" class="w-[50px]">
+                            @endforeach
+                        </div>
+
 
                         <div class="actions flex gap-2 items-center">
                             <a href="{{ route('projects.show', ['project' => $projectData]) }}"

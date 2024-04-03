@@ -47,13 +47,24 @@ $form_classes = 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded
                         <div class="text-red-500">{{ $message }}</div>
                     @enderror
                     <div class="mb-5">
-                        <label for="stack_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                            Project Stack </label>
-                        <select name="stack_id" id="stack_id" class="{{ $form_classes }}">
-                            @foreach ($stacks as $item)
-                                <option value="{{ $item->id }}">
-                                    {{ Str::ucfirst($item->name) }} </option>
+                        <label for="technologies" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Project Technologies </label>
+                        <div class="checkbox-container flex flex-col gap-3">
+                            @foreach ($technologies as $technology)
+                                <div class="flex items-center gap-4">
+                                    <input type="checkbox" name="technologies[]" id="technology_{{ $technology->id }}"
+                                        value="{{ $technology->id }}">
+                                    <label for="technology_{{ $technology->id }}"
+                                        class="capitalize flex items-center gap-3"><img
+                                            src="{{ $technology->logo_url }}" alt="" class="w-[20px]">
+                                        <span>
+                                            {{ $technology->name }}
+                                        </span>
+                                    </label><br>
+                                </div>
                             @endforeach
+                        </div>
+
 
                         </select>
                     </div>
